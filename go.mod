@@ -78,5 +78,3 @@ require (
 	gopkg.in/dnaeon/go-vcr.v4 v4.0.6-0.20251110073552-01de4eb40290 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace charm.land/catwalk => ../catwalk
