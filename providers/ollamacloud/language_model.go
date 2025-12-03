@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"charm.land/fantasy"
+	"charm.land/fantasy/object"
 )
 
 type languageModel struct {
@@ -460,4 +461,14 @@ func (lm *languageModel) prepareRequest(call fantasy.Call, stream bool) (map[str
 	}
 
 	return reqBody, nil
+}
+
+// GenerateObject implements fantasy.LanguageModel object generation using tool mode.
+func (lm *languageModel) GenerateObject(ctx context.Context, call fantasy.ObjectCall) (*fantasy.ObjectResponse, error) {
+	return object.GenerateWithTool(ctx, lm, call)
+}
+
+// StreamObject implements fantasy.LanguageModel object streaming using tool mode.
+func (lm *languageModel) StreamObject(ctx context.Context, call fantasy.ObjectCall) (fantasy.ObjectStreamResponse, error) {
+	return object.StreamWithTool(ctx, lm, call)
 }
