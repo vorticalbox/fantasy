@@ -155,6 +155,14 @@ func (o responsesLanguageModel) prepareParams(call fantasy.Call) (*responses.Res
 		}
 	}
 
+	systemInstructions := responsesSystemInstructions(call.Prompt)
+	if systemInstructions != "" && (openaiOptions == nil || openaiOptions.Instructions == nil) {
+		if openaiOptions == nil {
+			openaiOptions = &ResponsesProviderOptions{}
+		}
+		openaiOptions.Instructions = &systemInstructions
+	}
+
 	input, inputWarnings := toResponsesPrompt(call.Prompt, modelConfig.systemMessageMode)
 	warnings = append(warnings, inputWarnings...)
 
@@ -327,6 +335,31 @@ func (o responsesLanguageModel) prepareParams(call fantasy.Call) (*responses.Res
 	}
 
 	return params, warnings
+}
+
+func responsesSystemInstructions(prompt fantasy.Prompt) string {
+	var parts []string
+	for _, msg := range prompt {
+		if msg.Role != fantasy.MessageRoleSystem {
+			continue
+		}
+		for _, c := range msg.Content {
+			if c.GetType() != fantasy.ContentTypeText {
+				continue
+			}
+			textPart, ok := fantasy.AsContentType[fantasy.TextPart](c)
+			if !ok {
+				continue
+			}
+			if strings.TrimSpace(textPart.Text) != "" {
+				parts = append(parts, textPart.Text)
+			}
+		}
+	}
+	if len(parts) == 0 {
+		return ""
+	}
+	return strings.Join(parts, "\n")
 }
 
 func toResponsesPrompt(prompt fantasy.Prompt, systemMessageMode string) (responses.ResponseInputParam, []fantasy.CallWarning) {
