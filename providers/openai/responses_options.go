@@ -151,6 +151,7 @@ var responsesReasoningModelIDs = []string{
 	"gpt-5-nano",
 	"gpt-5-nano-2025-08-07",
 	"gpt-5-codex",
+	"gpt-5-codex-mini",
 	"gpt-5-chat",
 	"gpt-5-pro",
 	"gpt-5.1",
