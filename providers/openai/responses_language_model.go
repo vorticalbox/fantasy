@@ -163,7 +163,12 @@ func (o responsesLanguageModel) prepareParams(call fantasy.Call) (*responses.Res
 		openaiOptions.Instructions = &systemInstructions
 	}
 
-	input, inputWarnings := toResponsesPrompt(call.Prompt, modelConfig.systemMessageMode)
+	systemMessageMode := modelConfig.systemMessageMode
+	if openaiOptions != nil && openaiOptions.Instructions != nil {
+		systemMessageMode = "omit"
+	}
+
+	input, inputWarnings := toResponsesPrompt(call.Prompt, systemMessageMode)
 	warnings = append(warnings, inputWarnings...)
 
 	var include []IncludeType
@@ -409,6 +414,8 @@ func toResponsesPrompt(prompt fantasy.Prompt, systemMessageMode string) (respons
 					Type:    fantasy.CallWarningTypeOther,
 					Message: "system messages are removed for this model",
 				})
+			case "omit":
+				continue
 			}
 
 		case fantasy.MessageRoleUser:
